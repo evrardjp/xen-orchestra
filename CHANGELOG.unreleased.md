@@ -16,6 +16,7 @@
 - [Rolling Pool Update/Reboot] New `shutdownPinnedVms` option: VMs that cannot be migrated because they use a host-bound device (PCI passthrough, vGPU, SR-IOV VIF) are cleanly shut down before their host reboots and started again on it afterwards, instead of aborting the whole run. When such VMs block the run, XO now lists them and asks for confirmation instead of failing with a raw `CANNOT_EVACUATE_HOST` error (PR [#10125](https://github.com/vatesfr/xen-orchestra/pull/10125))
 - [i18n] Update Czech, Dutch, German, Korean, Portuguese and Slovak translations (PR [#10033](https://github.com/vatesfr/xen-orchestra/pull/10033))
 - [XO6/copyAll button] Add copy all button for IP list and bond device (PR [#10081](https://github.com/vatesfr/xen-orchestra/pull/10081))
+- [IPMI-plugin] added a route to get IPMI infos to setup the plugin (PR [#10003](https://github.com/vatesfr/xen-orchestra/tree/feat/ipmi-sensors/available-route) )
 
 ### Bug fixes
 
@@ -53,6 +54,7 @@
 - @xen-orchestra/web minor
 - @xen-orchestra/web-core minor
 - xo-server minor
+- xo-server-ipmi-plugin minor
 - xo-web minor
 
 <!--packages-end-->
