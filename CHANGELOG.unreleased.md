@@ -56,5 +56,7 @@
 - xo-server minor
 - xo-server-ipmi-plugin minor
 - xo-web minor
+- xo-server-openmetrics minor
+- xo-server-perf-alert patch
 
 <!--packages-end-->
