@@ -2,20 +2,19 @@
 
 When the plugin returns a sensor tagged with `"dataType": "unknown"`, it means
 the sensor name matched **none** of the regex rules configured for that host's
-vendor. Unknown sensors are still listed by the discovery endpoint, but they are
-**dropped** from `get_ipmi_sensors` (the categorized output consumed by the UI),
-because the plugin only keeps sensors it knows how to classify.
+vendor. Unknown sensors are still listed by the raw inventory, but they are
+**dropped** from the categorized `get_ipmi_sensors` output (consumed by the XO5
+UI), because the plugin only keeps sensors it knows how to classify.
 
 This guide explains how to map those unknown sensors to a known data type.
 
 ## 1. Understand the pipeline
 
-- `get_ipmi_sensors` ([index.mts](../src/index.mts)) returns sensors **grouped
-  by data type**, after filtering out everything irrelevant/unknown. This is
-  what the UI shows.
-- `getAvailableIpmiSensors` ([index.mts](../src/index.mts)) returns **every raw
-  sensor** with its resolved `dataType` (or `"unknown"`). Use this to discover
-  what needs a rule.
+- `get_ipmi_sensors` returns sensors **grouped by data type**, after filtering
+  out everything irrelevant/unknown. This is what the XO5 UI shows. (XO6 uses
+  the `GET /rest/v0/hosts/{id}/ipmi` REST route instead.)
+- `GET /rest/v0/hosts/{id}/ipmi` returns **every raw sensor** with its resolved
+  `dataType` (or `"unknown"`). Use it to discover what needs a rule.
 
 Both resolve the vendor from the host BIOS strings (`system-product-name`,
 lowercased). Note that all Dell hosts are collapsed to the vendor `dell` and all
@@ -23,8 +22,8 @@ Lenovo hosts to `lenovo`, regardless of model.
 
 ## 2. Get the list of sensors to categorize
 
-Fetch the available sensors for the host (e.g. via the REST route or
-`getAvailableIpmiSensors`). You'll get output like:
+Fetch the raw inventory for the host with `GET /rest/v0/hosts/{id}/ipmi`.
+You'll get output like:
 
 ```json
 {
@@ -110,6 +109,6 @@ To support a brand-new vendor, add a new `{ vendor, sensorRegexps }` object. The
 
 ## 6. Verify
 
-Re-run `getAvailableIpmiSensors` and confirm the previously-unknown sensors now
-report the expected `dataType`, then check that `get_ipmi_sensors` groups them
-correctly.
+Re-run `GET /rest/v0/hosts/{id}/ipmi` and confirm the previously-unknown sensors
+now report the expected `dataType`, then check that the categorized
+`get_ipmi_sensors` output groups them correctly.

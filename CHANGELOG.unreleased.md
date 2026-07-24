@@ -47,7 +47,10 @@
 <!--packages-start-->
 
 - @vates/types minor
-- @xen-orchestra/backup-archive patch
+  <<<<<<< HEAD
+- # @xen-orchestra/backup-archive patch
+- @xen-orchestra/backup-archive minor
+  > > > > > > > 4a33870bb (fix(ipmi): address PR review comments)
 - @xen-orchestra/backups patch
 - @xen-orchestra/disk-transform patch
 - @xen-orchestra/rest-api minor

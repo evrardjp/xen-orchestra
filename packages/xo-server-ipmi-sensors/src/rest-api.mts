@@ -7,11 +7,16 @@ export function createIpmiRestRoutes(plugin: IpmiSensorsPlugin): RouteDefinition
   return [
     {
       method: 'get',
-      endpoint: 'hosts/{id}/ipmi-sensors',
-      description: 'List the raw IPMI sensor inventory of a host. Required acl : ipmi:sensorsList on the host',
+      endpoint: 'hosts/{id}/ipmi',
+      description: [
+        'Get the IPMI inventory of a host: product context and the raw sensor list.',
+        '',
+        'Required privilege:',
+        '- resource: host, action: read',
+      ].join('\n'),
       tags: ['ipmi'],
-      params: { id: { type: 'string' } },
-      middlewares: [{ name: 'acl', acls: { resource: 'host', action: 'ipmi:sensorsList', objectId: 'params.id' } }],
+      params: { id: { type: 'string', example: '5b2c9e6a-1d3f-4c7b-9f2e-8a1b0c4d5e6f' } },
+      middlewares: [{ name: 'acl', acls: { resource: 'host', action: 'read', objectId: 'params.id' } }],
       responses: [
         {
           status: 200,
@@ -39,10 +44,23 @@ export function createIpmiRestRoutes(plugin: IpmiSensorsPlugin): RouteDefinition
             },
           },
         },
+        {
+          status: 404,
+          description: 'Host not found',
+        },
+        {
+          status: 503,
+          description: 'The host has no available IPMI device',
+        },
       ],
-      callback: async ({ req }) => {
+      callback: async ({ req, res }) => {
         const host = plugin.xo.getObject<XoHost>(req.params.id as XoHost['id'], 'host')
-        return plugin.getAvailableIpmiSensors({ host })
+        const result = await plugin.getAvailableIpmiSensors({ host })
+        if (!result.ipmiDeviceAvailable) {
+          res.status(503).json(result)
+          return
+        }
+        return result
       },
     },
   ]

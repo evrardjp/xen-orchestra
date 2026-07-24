@@ -21,9 +21,6 @@ export default {
     emergency: true,
   },
   start: true,
-  ipmi: {
-    sensorsList: true,
-  },
   update: {
     tags: true,
   },
