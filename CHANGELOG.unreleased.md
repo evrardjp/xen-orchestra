@@ -27,6 +27,7 @@
 - [XO6] Fix the VM's VDI tab, which always displays an empty list on initial load (PR [#10156](https://github.com/vatesfr/xen-orchestra/pull/10156))
 - [XO6] Fix the VM's VDI tab, which sometimes displays an error (PR [#10156](https://github.com/vatesfr/xen-orchestra/pull/10156))
 - [XO6] Reduce the number of HTTP requests when navigating between pages (PR [#10156](https://github.com/vatesfr/xen-orchestra/pull/10156))
+- [Smart reboot] Fix `suspendBlocked` error when no issue to suspend resident VMs (PR []())
 
 ### Packages to release
 
@@ -51,6 +52,7 @@
 - @xen-orchestra/rest-api minor
 - @xen-orchestra/web minor
 - @xen-orchestra/web-core minor
+- @xen-orchestra/xapi patch
 - xo-server minor
 - xo-web minor
 
