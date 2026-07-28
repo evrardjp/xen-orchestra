@@ -47,20 +47,14 @@
 <!--packages-start-->
 
 - @vates/types minor
-  <<<<<<< HEAD
-- # @xen-orchestra/backup-archive patch
-- @xen-orchestra/backup-archive minor
-  > > > > > > > 4a33870bb (fix(ipmi): address PR review comments)
+- @xen-orchestra/backup-archive patch
 - @xen-orchestra/backups patch
 - @xen-orchestra/disk-transform patch
 - @xen-orchestra/rest-api minor
 - @xen-orchestra/web minor
 - @xen-orchestra/web-core minor
 - xo-server minor
-- xo-server-ipmi-plugin minor
-- xo-web minor
 - xo-server-ipmi-sensors minor
-- xo-server-openmetrics minor
-- xo-server-perf-alert patch
+- xo-web minor
 
 <!--packages-end-->
