@@ -12,6 +12,10 @@ export class LicenseService {
   }
 
   async getXostorLicenses(srId: XoSr['id']): Promise<{ licenseId: string; boundObjectId: string }[]> {
+    if (this.#restApi.xoApp.isSourceEdition()) {
+      return []
+    }
+
     const xapiSr = this.#restApi.getXapiObject<XoSr>(srId, 'SR')
     const xapi = xapiSr.$xapi
     const licenses = await this.#restApi.xoApp.getLicenses({ productType: 'xostor' })

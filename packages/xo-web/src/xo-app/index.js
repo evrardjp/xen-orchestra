@@ -66,6 +66,7 @@ import { SOURCES } from '../common/xoa-plans'
 import { getLicenseNearExpiration } from '../common/xoa-updater'
 
 const shortcutManager = new ShortcutManager(keymap)
+const SHOW_SOURCE_NOTICES = process.env.XO_SOURCE_NOTICES === 'true'
 
 const CONTAINER_STYLE = {
   display: 'flex',
@@ -257,6 +258,18 @@ export const ICON_POOL_LICENSE = {
       { xcpngLicenseByBoundObjectId, xostorLicensesByBoundObjectId, hostsByPoolId },
       { xostors }
     ) => {
+      if (getXoaPlan() === SOURCES.name) {
+        const xostorLicenseInfoByXostorId = {}
+        forEach(xostors, xostor => {
+          xostorLicenseInfoByXostorId[xostor.id] = {
+            alerts: [],
+            managementEnabled: true,
+            supportEnabled: false,
+          }
+        })
+        return xostorLicenseInfoByXostorId
+      }
+
       if (xcpngLicenseByBoundObjectId === undefined || xostorLicensesByBoundObjectId === undefined) {
         return
       }
@@ -379,7 +392,7 @@ export default class XoApp extends Component {
 
   componentDidMount() {
     this.refs.bodyWrapper.style.minHeight = this.refs.menu.getWrappedInstance().height + 'px'
-    if (+process.env.XOA_PLAN === 5) {
+    if (SHOW_SOURCE_NOTICES && +process.env.XOA_PLAN === 5) {
       this.displayOpenSourceDisclaimer()
     }
   }
@@ -473,7 +486,7 @@ export default class XoApp extends Component {
                   <Link to='/xoa/update'>{_('notRegisteredDisclaimerRegister')}</Link>
                 </div>
               )}
-              {plan === 'Community' && !this.state.dismissedSourceBanner && (
+              {SHOW_SOURCE_NOTICES && plan === 'Community' && !this.state.dismissedSourceBanner && (
                 <div className='alert alert-danger mb-0'>
                   <a
                     href='https://vates.tech/deploy/?pk_campaign=xo_source_banner'

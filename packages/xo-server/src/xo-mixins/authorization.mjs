@@ -139,7 +139,7 @@ export default class Authorization {
   }
 
   async checkFeatureAuthorization(featureCode) {
-    if (this.#app.getXoaPlan === undefined) {
+    if (this.isSourceEdition()) {
       // source user => everything is open
       return
     }
@@ -176,5 +176,9 @@ export default class Authorization {
     } catch (_) {
       return false
     }
+  }
+
+  isSourceEdition() {
+    return this.#app.getXoaPlan === undefined
   }
 }

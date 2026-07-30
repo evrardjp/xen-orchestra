@@ -6,6 +6,7 @@ export const XO_LINKS = {
   BLOG: 'https://xen-orchestra.com/blog/',
   COMMUNITY: 'https://xcp-ng.org/forum/category/12/xen-orchestra',
   DOC: 'https://docs.xen-orchestra.com',
+  SOURCE: 'https://github.com/evrardjp/xen-orchestra',
   TRANSLATION: 'https://translate.vates.tech/engage/xen-orchestra/',
 }
 

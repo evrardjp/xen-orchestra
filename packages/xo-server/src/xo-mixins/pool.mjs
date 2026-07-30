@@ -96,7 +96,7 @@ export default class Pools {
     }
 
     const hasLinstorSr = some(_app.objects.all, { SR_type: 'linstor', $pool: target.uuid })
-    if (hasLinstorSr) {
+    if (hasLinstorSr && !_app.isSourceEdition()) {
       await enforceHostsHaveLicense($defer, _app, 'xostor', sourceIds)
     }
 

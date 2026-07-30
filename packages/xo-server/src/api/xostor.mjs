@@ -185,55 +185,57 @@ export const create = defer(async function (
     const poolHostIds = Object.keys(xapi.objects.indexes.type.host)
     const poolHosts = poolHostIds.map(id => this.getObject(id, 'host'))
 
-    await Task.run({ properties: { name: 'licenses check' } }, async () => {
-      const now = Date.now()
-      const nPoolHosts = poolHostIds.length
+    if (!this.isSourceEdition()) {
+      await Task.run({ properties: { name: 'licenses check' } }, async () => {
+        const now = Date.now()
+        const nPoolHosts = poolHostIds.length
 
-      const xostorLicenses = await this.getLicenses({ productType: 'xostor' })
-      let availableLicenses = xostorLicenses.filter(
-        ({ boundObjectId, expires }) => boundObjectId === undefined && (expires === undefined || expires > now)
-      )
-      const nAvailableLicenses = availableLicenses.length
+        const xostorLicenses = await this.getLicenses({ productType: 'xostor' })
+        let availableLicenses = xostorLicenses.filter(
+          ({ boundObjectId, expires }) => boundObjectId === undefined && (expires === undefined || expires > now)
+        )
+        const nAvailableLicenses = availableLicenses.length
 
-      if (nAvailableLicenses === 0) {
-        availableLicenses = await Task.run(
-          { properties: { name: 'Creating trial licenses', quantity: nPoolHosts } },
-          async () => {
-            try {
-              return await this.createXostorTrialLicenses({
-                quantity: nPoolHosts,
-              })
-            } catch (error) {
-              const trialAlreadyCreated = xostorLicenses.some(license => license.tags?.includes('TRIAL'))
-              // In case trial licenses have been already created, the updater receive an error 500
-              if (error.message === 'unknown error from the peer' && trialAlreadyCreated) {
-                throw new Error('XOSTOR trial licenses can only be created once')
+        if (nAvailableLicenses === 0) {
+          availableLicenses = await Task.run(
+            { properties: { name: 'Creating trial licenses', quantity: nPoolHosts } },
+            async () => {
+              try {
+                return await this.createXostorTrialLicenses({
+                  quantity: nPoolHosts,
+                })
+              } catch (error) {
+                const trialAlreadyCreated = xostorLicenses.some(license => license.tags?.includes('TRIAL'))
+                // In case trial licenses have been already created, the updater receive an error 500
+                if (error.message === 'unknown error from the peer' && trialAlreadyCreated) {
+                  throw new Error('XOSTOR trial licenses can only be created once')
+                }
+                throw error
               }
-              throw error
             }
+          )
+        } else if (nAvailableLicenses < nPoolHosts) {
+          throw new Error(`Not enough XOSTOR licenses. Expected: ${nPoolHosts}, actual: ${nAvailableLicenses}`)
+        }
+
+        await asyncEach(
+          poolHostIds,
+          async hostId => {
+            const license = availableLicenses.pop()
+            await this.bindLicense({
+              licenseId: license.id,
+              boundObjectId: hostId,
+            })
+            $defer.onFailure(() =>
+              this.unbindLicense({ licenseId: license.id, productId: 'xostor', boundObjectId: hostId })
+            )
+          },
+          {
+            stopOnError: false,
           }
         )
-      } else if (nAvailableLicenses < nPoolHosts) {
-        throw new Error(`Not enough XOSTOR licenses. Expected: ${nPoolHosts}, actual: ${nAvailableLicenses}`)
-      }
-
-      await asyncEach(
-        poolHostIds,
-        async hostId => {
-          const license = availableLicenses.pop()
-          await this.bindLicense({
-            licenseId: license.id,
-            boundObjectId: hostId,
-          })
-          $defer.onFailure(() =>
-            this.unbindLicense({ licenseId: license.id, productId: 'xostor', boundObjectId: hostId })
-          )
-        },
-        {
-          stopOnError: false,
-        }
-      )
-    })
+      })
+    }
 
     const handleHostsDependencies = defer(async ($defer, hosts) => {
       const boundInstallDependencies = installDependencies.bind(this)
@@ -345,14 +347,16 @@ export async function destroy({ sr }) {
     await Task.run({ properties: { name: 'deletion of the storage', objectId: sr.uuid } }, () =>
       xapi.destroySr(sr._xapiId)
     )
-    await Task.run({ properties: { name: 'unbind attached licenses' } }, () =>
-      asyncEach(hosts, host => {
-        this.unbindLicense({
-          boundObjectId: host.id,
-          productId: 'xostor',
+    if (!this.isSourceEdition()) {
+      await Task.run({ properties: { name: 'unbind attached licenses' } }, () =>
+        asyncEach(hosts, host => {
+          this.unbindLicense({
+            boundObjectId: host.id,
+            productId: 'xostor',
+          })
         })
-      })
-    )
+      )
+    }
     await Task.run({ properties: { name: `destroy volume group on ${hosts.length} hosts` } }, () =>
       asyncEach(hosts, host => destroyVolumeGroup(xapi, host, true), { stopOnError: false })
     )

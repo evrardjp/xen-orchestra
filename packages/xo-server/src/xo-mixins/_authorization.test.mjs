@@ -15,6 +15,13 @@ const makeLicense = (bundleId, { expires } = {}) => ({
 })
 
 describe('Authorization', function () {
+  describe('isSourceEdition', function () {
+    it('should identify a source build by the absence of the XOA plan provider', function () {
+      assert.equal(new Authorization({}).isSourceEdition(), true)
+      assert.equal(new Authorization(makeApp()).isSourceEdition(), false)
+    })
+  })
+
   describe('checkFeatureAuthorization', function () {
     describe('source user (no getXoaPlan)', function () {
       it('should allow any feature', async function () {

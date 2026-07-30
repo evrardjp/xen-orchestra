@@ -37,6 +37,9 @@ jobs:
       - name: Ensure yarn.lock is up-to-date
         run: git diff --exit-code yarn.lock
 
+      - name: Check pinned XO Proxy installer patch
+        run: bash scripts/check-xo-proxy-installer-patch.sh
+
       - name: Build the project
         run: yarn build
 

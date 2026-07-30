@@ -10,6 +10,7 @@ import { Container, Row, Col } from 'grid'
 import { connectStore, getXoaPlan } from 'utils'
 
 const COMMIT_ID = process.env.GIT_HEAD
+const SOURCE_REPOSITORY_URL = 'https://github.com/evrardjp/xen-orchestra'
 
 const HEADER = (
   <Container>
@@ -86,7 +87,7 @@ export default class About extends Component {
                     <h4>
                       Xen Orchestra, commit{' '}
                       <a
-                        href={'https://github.com/vatesfr/xen-orchestra/commit/' + COMMIT_ID}
+                        href={`${SOURCE_REPOSITORY_URL}/commit/${COMMIT_ID}`}
                         target='_blank'
                         rel='noreferrer'
                       >

@@ -4309,7 +4309,7 @@ export const installNbdKit = file => {
 }
 // GitHub API ---------------------------------------------------------------
 const _callGithubApi = async (endpoint = '') => {
-  const url = new URL('https://api.github.com/repos/vatesfr/xen-orchestra')
+  const url = new URL('https://api.github.com/repos/evrardjp/xen-orchestra')
   url.pathname += endpoint
   const resp = await fetch(url.toString())
   const json = await resp.json()

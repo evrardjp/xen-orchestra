@@ -30,6 +30,11 @@
                 </UiLink>
               </template>
             </VtsTabularKeyValueRow>
+            <VtsTabularKeyValueRow :label="t('source')">
+              <template #value>
+                <UiLink size="medium" :href="XO_LINKS.SOURCE">GitHub</UiLink>
+              </template>
+            </VtsTabularKeyValueRow>
           </VtsTabularKeyValueList>
         </VtsColumn>
         <VtsColumn>
